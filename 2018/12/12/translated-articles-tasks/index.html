@@ -94,7 +94,7 @@
 <meta property="og:site_name" content="喂！西瓜">
 <meta property="og:description" content="原文链接 JakeTasks, microtasks, queues and schedules 当我告诉我的同事 Matt Gaunt 我正在思考写一篇有关于宏任务和浏览器中事件循环执行的文章时,他对我说：“我可以诚实的告诉你，我不打算读它。”好吧，无论如何我现在已经写完了，那何不坐这里好好读一下呢。事实上，如果你更喜欢视频的形式，Philip Roberts 在 JSConf 上做了一次有关于">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-12-12T12:59:44.877Z">
+<meta property="og:updated_time" content="2018-12-13T03:35:48.134Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="宏任务、微任务、队列和时间轴[译]">
 <meta name="twitter:description" content="原文链接 JakeTasks, microtasks, queues and schedules 当我告诉我的同事 Matt Gaunt 我正在思考写一篇有关于宏任务和浏览器中事件循环执行的文章时,他对我说：“我可以诚实的告诉你，我不打算读它。”好吧，无论如何我现在已经写完了，那何不坐这里好好读一下呢。事实上，如果你更喜欢视频的形式，Philip Roberts 在 JSConf 上做了一次有关于">
@@ -388,7 +388,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">console.log(&apos;script start&apos;);</span><br><span class="line"></span><br><span class="line">setTimeout(function() &#123;</span><br><span class="line">  console.log(&apos;setTimeout&apos;);</span><br><span class="line">&#125;, 0);</span><br><span class="line"></span><br><span class="line">Promise.resolve().then(function() &#123;</span><br><span class="line">  console.log(&apos;promise1&apos;);</span><br><span class="line">&#125;).then(function() &#123;</span><br><span class="line">  console.log(&apos;promise2&apos;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">console.log(&apos;script end&apos;);</span><br></pre></td></tr></table></figure>
 <p>正确的打印顺序是 script start, script end, promise1, promise2, setTimeout，但是这个结果在不同浏览器下会有偏差。<br>Edge, Firefox 40,移动端的 Safari 和桌面端的 Safari（版本 8.0.8），会在打印 promise1, promise2 之前打印 setTimeout。非常奇怪的是在 Firefox 39 and Safari 8.0.7 中又会打印出正确的顺序。</p>
 <h3 id="为什么会这样"><a href="#为什么会这样" class="headerlink" title="为什么会这样"></a>为什么会这样</h3><p>要想理解为什么会这样我们需要理解事件循环是怎么处理任务和微任务的。如果你是第一次碰到这个问题那么这可能花费你不少的脑细胞，深呼吸，开始吧！<br>每个 Web worker 都拥有能够独立执行的 event loop，而同一个源上的所有窗口借助同步通信可以共享一个 event loop。 event loop 持续不断的运行来处理排列的任务。</p>
-<blockquote class="blockquote-center"><p>太难翻了，立个 lage,我后面一定会把它翻译完。</p>
+<blockquote class="blockquote-center"><p>太难翻了，立个 flag,我后面一定会把它翻译完。</p>
 </blockquote>
 
       
