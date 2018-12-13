@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="node,js,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="2 套 APIurl 模块提供了两套 API:  旧版本的遗留–Node.js 特有 API WHATWG URL Standard 的 API–在各种浏览器中被使用">
+<meta name="keywords" content="node,js">
+<meta property="og:type" content="article">
+<meta property="og:title" content="过Node的API-URL篇">
+<meta property="og:url" content="http://yoursite.com/2018/12/05/node-url/index.html">
+<meta property="og:site_name" content="喂！西瓜">
+<meta property="og:description" content="2 套 APIurl 模块提供了两套 API:  旧版本的遗留–Node.js 特有 API WHATWG URL Standard 的 API–在各种浏览器中被使用">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2018/12/05/node-url/node-url-params.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/05/node-url/result.png">
+<meta property="og:updated_time" content="2018-12-12T10:08:36.635Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="过Node的API-URL篇">
+<meta name="twitter:description" content="2 套 APIurl 模块提供了两套 API:  旧版本的遗留–Node.js 特有 API WHATWG URL Standard 的 API–在各种浏览器中被使用">
+<meta name="twitter:image" content="http://yoursite.com/2018/12/05/node-url/node-url-params.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/12/05/node-url/">
+
+
+
+
+
+  <title>过Node的API-URL篇 | 喂！西瓜</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?5036d6fe85a617d22d6578e0e93ee9d4";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/lear-cash" target="_blank" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">喂！西瓜</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">李涛的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br>
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/05/node-url/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="李涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="喂！西瓜">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">过Node的API-URL篇</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-05T19:03:45+08:00">
+                2018-12-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/js/" itemprop="url" rel="index">
+                    <span itemprop="name">js</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/js/node/" itemprop="url" rel="index">
+                    <span itemprop="name">node</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="2-套-API"><a href="#2-套-API" class="headerlink" title="2 套 API"></a>2 套 API</h3><p>url 模块提供了两套 API:</p>
+<ol>
+<li>旧版本的遗留–Node.js 特有 API</li>
+<li>WHATWG URL Standard 的 API–在各种浏览器中被使用</li>
+</ol>
+<a id="more"></a>
+<p>官网上有个非常好的图<br><img src="/2018/12/05/node-url/node-url-params.png" title="API示意图"><br> 红字上方为遗留 API 解析后的参数,下方为 WHATWG URL Standard 解析后的参数,差异并不大,主要集中在 2 处。</p>
+<ol>
+<li> 原有的 auth 被拆分为–username 和 password</li>
+<li> 原有的 API 提供 query 使用– 新版移除</li>
+<li>标准 API 使用了 gette 和 setter 来实现效果，所以我们修改某个值后，关联的部分会对应修改,但是遗留 API 不会，所以对于遗留 API,通常是 parse 配合 format 来使用</li>
+</ol>
+<h3 id="API-使用-方式"><a href="#API-使用-方式" class="headerlink" title="API 使用  方式"></a>API 使用  方式</h3><p> 下面是 nodejs 抛出的接口，node 的注释还是非常棒的,可以清楚看出来需要解构哪个使用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">module.exports = &#123;</span><br><span class="line">// Original API</span><br><span class="line">Url,</span><br><span class="line">parse: urlParse,</span><br><span class="line">resolve: urlResolve,</span><br><span class="line">resolveObject: urlResolveObject,</span><br><span class="line">format: urlFormat,</span><br><span class="line"></span><br><span class="line">// WHATWG API</span><br><span class="line">URL,</span><br><span class="line">URLSearchParams,</span><br><span class="line">domainToASCII,</span><br><span class="line">domainToUnicode,</span><br><span class="line"></span><br><span class="line">// Utilities</span><br><span class="line">pathToFileURL,</span><br><span class="line">fileURLToPath</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h4><p>建议使用标准 API，遗留的只是为了兼容已存在的应用程序。<br>new URL(input[, base])<br>input &lt;string> 要解析的输入 URL<br>base &lt;string> | <url> 如果“input”是相对 URL，则为要解析的基本 URL</url></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const myURL = new URL(&apos;https://user:pass@sub.host.com:8080/p/a/t/h?query=string#hash&apos;);</span><br></pre></td></tr></table></figure>
+<img src="/2018/12/05/node-url/result.png" title="标准api使用结果图">
+<h4 id="处理-query"><a href="#处理-query" class="headerlink" title="处理 query"></a>处理 query</h4><ul>
+<li><p>使用遗留 API parse<br>在 API 示意图中我们可以看到存在字段 query</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">const &#123; parse &#125; = require(&apos;url&apos;);</span><br><span class="line">const myURL = parse(</span><br><span class="line">&apos;https://user:pass@sub.host.com:8080/p/a/t/h?query=string#hash&apos;,</span><br><span class="line">true,</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>第二个参数为 true 时，query 为 object，false 则为 string。<br>不推荐这种使用方式，因为我们只能读取，如果修改后对应的值不会做出相应变更，所以推荐使用以下 2 种标准 API 的方式。</p>
+</li>
+<li><p>使用 searchParams<br>标准 api 使用结果图中我们看到输出值有 searchParams，但是这个属性为只读属性，我们并不能操作，需要使用对应的 api。</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">myURL.searchParams.get(&apos;query&apos;)</span><br><span class="line">// get获取的是第一个，getAll获取到的是全部,类型为Array在实际的应用中，我们基本不会出现同名的字段。</span><br><span class="line">myURL.searchParams.getAll(&apos;query&apos;)</span><br><span class="line">// append为追加，可以追加同名query</span><br><span class="line">myURL.searchParams.append(&apos;abc&apos;, &apos;xyz&apos;);</span><br><span class="line">// set为重置，没有时则为添加</span><br><span class="line">myURL.searchParams.set(&apos;a&apos;, &apos;b&apos;);</span><br><span class="line">myURL.searchParams.delete(&apos;abc&apos;);</span><br></pre></td></tr></table></figure>
+<p>注：还有部分方法参见 URLSearchParams 类</p>
+<p>除了以上方法以外，我们还可以通过写入 search 属性来整体重置 query 的值</p>
+<ul>
+<li><p>使用 URLSearchParams 类<br>URLSearchParams 类本质上和 searchParams 一样，使用的 api 也一致。<br>通过 new 的形式构造即可,接受 string 和 object 以及 iterable 类型的参数，如果 string 以’?’打头,则’?’将会被忽略。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">const &#123; URLSearchParams &#125; = require(&apos;url&apos;);</span><br><span class="line">const myURL = new URL(&apos;https://example.org/?abc=123&apos;);</span><br><span class="line">// 下面的代码等同于 const newSearchParams = new URLSearchParams(myURL.search);</span><br><span class="line">const newSearchParams = new URLSearchParams(myURL.searchParams);</span><br><span class="line">newSearchParams.append(&apos;a&apos;, &apos;c&apos;);</span><br><span class="line">// newSearchParams.toString() 被隐式调用</span><br><span class="line">myURL.search = newSearchParams;</span><br></pre></td></tr></table></figure>
+<p>URLSearchParams 类还拥有 forEach，has，keys，sort，values，entries 等方法。</p>
+</li>
+</ul>
+<h4 id="返回格式化-url"><a href="#返回格式化-url" class="headerlink" title="返回格式化 url"></a>返回格式化 url</h4><ul>
+<li>对于标准 API:<br>URL 对象的 toString()方法和 href 属性都可以返回 URL 的序列化的字符串,但都不可以被定义，可以通过 format 来自定义<br>url.format(URL[, options]) auth fragment(#号的锚点部分) search unicode</li>
+<li>对于遗留 API:<br>url.format(urlObject) 传入一个 object 写入各个对应的值来生成，通常和 parse 配合使用。</li>
+</ul>
+<h4 id="未总结-API"><a href="#未总结-API" class="headerlink" title="未总结 API"></a>未总结 API</h4><p>部分 API 不做介绍了。<br>resolve(把目标 url 解析成相对于基础 url 的格式) resolveObject domainToASCII domainToUnicode pathToFileURL fileURLToPath</p>
+<h3 id="总结-amp-TODo"><a href="#总结-amp-TODo" class="headerlink" title="总结&amp;TODo"></a>总结&amp;TODo</h3><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><ol>
+<li>url 模块是 nodejs 中一个比较简单的模块，用来出来处理 url，方便我们使用。存在 2 套 API，一套是标准 API，遵循 WHATWG URL Standard，这个标准也被广大浏览器所采用，遗留的 API 则为兼容之前程序而被保留。</li>
+<li>根据浏览器的约定，URL 对象的所有属性都是在类的原型上实现为 getter 和 setter，而不是作为对象本身的数据属性。新的 API 实现了这部分的要求，所以也推荐使用标准 API，旧的 API 则通常需要 parse 和 foramt 配合使用。</li>
+</ol>
+<h4 id="ToDo"><a href="#ToDo" class="headerlink" title="ToDo"></a>ToDo</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">const &#123; URL &#125; = require(&apos;url&apos;);</span><br><span class="line">const myUrl = new URL(</span><br><span class="line">  &apos;https://user:pass@sub.host.com:8080/p/a/t/h?query1=string1&amp;query2=string2#hash&apos;,</span><br><span class="line">);</span><br><span class="line">// 打印myUrl可以看到port但是下面的语句返回false</span><br><span class="line">myUrl.hasOwnProperty(&apos;port&apos;) // false</span><br></pre></td></tr></table></figure>
+<p>暂时还没想到上面的效果可以怎么实现</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/node/" rel="tag"><i class="fa fa-tag"></i> node</a>
+          
+            <a href="/tags/js/" rel="tag"><i class="fa fa-tag"></i> js</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/11/node-events/" rel="prev" title="过Node的API-events篇">
+                过Node的API-events篇 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img style=" border-radius: 50%;" class="site-author-image" itemprop="image" src="/images/author.jpeg" alt="李涛">
+            
+              <p class="site-author-name" itemprop="name">李涛</p>
+              <p class="site-description motion-element" itemprop="description">知行合一</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/lear-cash" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/5491427443/home?wvr=5" target="_blank" title="微博">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>微博</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-套-API"><span class="nav-number">1.</span> <span class="nav-text">2 套 API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#API-使用-方式"><span class="nav-number">2.</span> <span class="nav-text">API 使用  方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单使用"><span class="nav-number">2.1.</span> <span class="nav-text">简单使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#处理-query"><span class="nav-number">2.2.</span> <span class="nav-text">处理 query</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回格式化-url"><span class="nav-number">2.3.</span> <span class="nav-text">返回格式化 url</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#未总结-API"><span class="nav-number">2.4.</span> <span class="nav-text">未总结 API</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结-amp-TODo"><span class="nav-number">3.</span> <span class="nav-text">总结&amp;TODo</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">3.1.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ToDo"><span class="nav-number">3.2.</span> <span class="nav-text">ToDo</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">李涛</span>
+
+  
+</div>
+
+<div class="powered-by">
+  <i class="fa fa-user-md"></i>&nbsp;<span id="busuanzi_container_site_uv">本站访客数:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="post-meta-divider">|</span>
+  <span class="post-count">博客全站共3.4k字</span>
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

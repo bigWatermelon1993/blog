@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="node,js,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="events 概述events 模块是 node 中一个非常重要的模块,几乎所有的模块都依赖了这个模块。比如 http 的实例可以触发 request 事件，就是因为 http 实例本身也是 events 的一个实例。 123456789const http = require(&amp;apos;http&amp;apos;);const event = require(&amp;apos;events&amp;apos;);">
+<meta name="keywords" content="node,js">
+<meta property="og:type" content="article">
+<meta property="og:title" content="过Node的API-events篇">
+<meta property="og:url" content="http://yoursite.com/2018/12/11/node-events/index.html">
+<meta property="og:site_name" content="喂！西瓜">
+<meta property="og:description" content="events 概述events 模块是 node 中一个非常重要的模块,几乎所有的模块都依赖了这个模块。比如 http 的实例可以触发 request 事件，就是因为 http 实例本身也是 events 的一个实例。 123456789const http = require(&amp;apos;http&amp;apos;);const event = require(&amp;apos;events&amp;apos;);">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-12-12T07:23:41.049Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="过Node的API-events篇">
+<meta name="twitter:description" content="events 概述events 模块是 node 中一个非常重要的模块,几乎所有的模块都依赖了这个模块。比如 http 的实例可以触发 request 事件，就是因为 http 实例本身也是 events 的一个实例。 123456789const http = require(&amp;apos;http&amp;apos;);const event = require(&amp;apos;events&amp;apos;);">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/12/11/node-events/">
+
+
+
+
+
+  <title>过Node的API-events篇 | 喂！西瓜</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?5036d6fe85a617d22d6578e0e93ee9d4";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/lear-cash" target="_blank" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">喂！西瓜</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">李涛的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br>
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/11/node-events/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="李涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="喂！西瓜">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">过Node的API-events篇</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-11T16:11:58+08:00">
+                2018-12-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/js/" itemprop="url" rel="index">
+                    <span itemprop="name">js</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/js/node/" itemprop="url" rel="index">
+                    <span itemprop="name">node</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="events-概述"><a href="#events-概述" class="headerlink" title="events 概述"></a>events 概述</h3><p>events 模块是 node 中一个非常重要的模块,几乎所有的模块都依赖了这个模块。比如 http 的实例可以触发 request 事件，就是因为 http 实例本身也是 events 的一个实例。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const http = require(&apos;http&apos;);</span><br><span class="line">const event = require(&apos;events&apos;);</span><br><span class="line">const serve = http</span><br><span class="line">  .createServer(function(request, response) &#123;</span><br><span class="line">    response.writeHead(200, &#123; &apos;Content-Type&apos;: &apos;text/plain&apos; &#125;);</span><br><span class="line">    response.end(&apos;Hello World\n&apos;);</span><br><span class="line">  &#125;)</span><br><span class="line">  .listen(7777);</span><br><span class="line">console.log(serve instanceof event); // true</span><br></pre></td></tr></table></figure>
+   <a id="more"></a>
+<p>所以说 events 是一个非常重要的模块，但是 events 这个模块不是很复杂，简单的来说是一个发布订阅模式的实现。</p>
+<h3 id="API-使用"><a href="#API-使用" class="headerlink" title="API 使用"></a>API 使用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">module.exports = EventEmitter;</span><br></pre></td></tr></table></figure>
+<p>抛出的 API 非常简单,是一个构造函数,通过生成实例来使用。</p>
+<h4 id="添加事件"><a href="#添加事件" class="headerlink" title="添加事件"></a>添加事件</h4><ol>
+<li><p>使用 on 添加<br>emitter.on(eventName, listener)<br>eventName &lt;string> | &lt;symbol> 事件名称。<br>listener &lt;Function> 回调函数。<br>返回: &lt;EventEmitter></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">const Event = require(&apos;events&apos;);</span><br><span class="line">const myEmitter = new Event();</span><br><span class="line">myEmitter.on(&apos;test1&apos;, function() &#123;</span><br><span class="line">     console.log(&apos;测试 1&apos;);</span><br><span class="line">&#125;);</span><br><span class="line">myEmitter.on(&apos;test1&apos;, function() &#123;</span><br><span class="line">     console.log(&apos;测试 2&apos;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>注：<br>实例可以添加多个同名的监听器<br>on 方法返回的是当前实例，所以可以采用链式调用的写法来注册多个监听器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const Event = require(&apos;events&apos;);</span><br><span class="line">const myEmitter = new Event();</span><br><span class="line">myEmitter</span><br><span class="line">     .on(&apos;test1&apos;, function() &#123;</span><br><span class="line">         console.log(&apos;测试 1&apos;);</span><br><span class="line">     &#125;)</span><br><span class="line">     .on(&apos;test1&apos;, function() &#123;</span><br><span class="line">         console.log(&apos;测试 2&apos;);</span><br><span class="line">     &#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用 addListener 添加<br>这个方法是 on 的别名,用法和 on 一致</p>
+</li>
+<li><p>使用 prependListener 添加<br>使用 on 添加的新事件会被添加到监听器数组的末尾，使用这个方法添加的事件则会被添加到开头被优先触发。</p>
+</li>
+<li><p>使用 once 添加<br>使用方法和 on 一致，但添加事件被触发时，监听器会被先移除，然后调用，所以该方法事件只会触发一次</p>
+</li>
+<li><p>使用 prependOnceListener 添加<br>使用 once 添加的新事件会被添加到监听器数组的末尾，使用这个方法添加的事件则会被添加到开头被优先触发，同样只会触发一次。</p>
+</li>
+</ol>
+<h4 id="触发事件"><a href="#触发事件" class="headerlink" title="触发事件"></a>触发事件</h4><pre><code>emitter.emit(eventName[, ...args])
+eventName &lt;string\&gt; | &lt;symbol\&gt;
+...args &lt;any\&gt;
+返回: &lt;boolean\&gt;
+使用该方法来触发监听器，会按照监听器注册的顺序来同步的调用，args 为需要传入到监听器函数中的参数
+返回值为 blooean,表明是否存在对应监听器
+</code></pre><h4 id="移除事件"><a href="#移除事件" class="headerlink" title="移除事件"></a>移除事件</h4><ol>
+<li><p>移除单个事件<br>emitter.removeListener(eventName, listener)<br>eventName &lt;string> | &lt;symbol> 事件名称。<br>listener &lt;Function> 监听器<br>返回: &lt;EventEmitter></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">const Event = require(&apos;events&apos;);</span><br><span class="line">const myEmitter = new Event();</span><br><span class="line">function test() &#123;</span><br><span class="line">     console.log(&apos;test&apos;);</span><br><span class="line">&#125;</span><br><span class="line">myEmitter.on(&apos;test1&apos;, test);</span><br><span class="line">myEmitter.removeListener(&apos;test1&apos;, test);</span><br></pre></td></tr></table></figure>
+<p>注:</p>
+<ol>
+<li>添加监听器时如果使用的是匿名函数，那么无法单独删除这个监听器</li>
+<li>同名监听器只会删除第一个，需要多次调用才可以全部删除</li>
+<li>如果被删除的监听器处于调用队列中时，那么调用结束后才会被删除</li>
+</ol>
+</li>
+<li>移除全部事件<br>emitter.removeAllListeners([eventName])<br>eventName <string> | <symbol><br>返回: <eventemitter><br>传入参数时为移除对应的全部监听器，不传时移除全部监听器。</eventemitter></symbol></string></li>
+</ol>
+<h4 id="其他内置的事件、方法、属性"><a href="#其他内置的事件、方法、属性" class="headerlink" title="其他内置的事件、方法、属性"></a>其他内置的事件、方法、属性</h4><ol>
+<li><p>newListener 事件<br>eventName &lt;string> | &lt;symbol> 事件的名称。<br>listener &lt;Function> 事件的句柄函数<br>新的监听器被添加到其内部监听器数组之前，会触发自身的 ‘newListener’ 事件<br>注意：如果在 newListener 中添加同名的监听器那么该监听器会被插入到正被添加的监听器前面。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">const myEmitter = new MyEmitter();</span><br><span class="line">// 只处理一次，避免无限循环。</span><br><span class="line">myEmitter.once(&apos;newListener&apos;, (event, listener) =&gt; &#123;</span><br><span class="line">     if (event === &apos;event&apos;) &#123;</span><br><span class="line">         // 在前面插入一个新的监听器。</span><br><span class="line">         myEmitter.on(&apos;event&apos;, () =&gt; &#123;</span><br><span class="line">         console.log(&apos;B&apos;);</span><br><span class="line">         &#125;);</span><br><span class="line">     &#125;</span><br><span class="line">&#125;);</span><br><span class="line">myEmitter.on(&apos;event&apos;, () =&gt; &#123;</span><br><span class="line">     console.log(&apos;A&apos;);</span><br><span class="line">&#125;);</span><br><span class="line">myEmitter.emit(&apos;event&apos;);</span><br><span class="line">// 打印:</span><br><span class="line">// B</span><br><span class="line">// A</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>removeListener 事件<br>和 newListener 相反，监听器被移除时触发，传入参数一致。<br>注： 当做方法使用时则为移除事件的 api</p>
+</li>
+<li><p>error 事件<br>当 EventEmitter 实例出错时，会抛出错误，并退出进程，这是我们需要避免的。我们习惯把错误的回调称为 error 所以我们通常会为实例注册 error 事件来处理错误，所以我们甚至可以把事件命名为 hehe。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">const Event = require(&apos;events&apos;);</span><br><span class="line">const myEmitter = new Event();</span><br><span class="line">myEmitter.on(&apos;error&apos;, err =&gt; &#123;</span><br><span class="line">     console.error(err);</span><br><span class="line">&#125;);</span><br><span class="line">myEmitter.on(&apos;test&apos;, () =&gt; &#123;</span><br><span class="line">    let a = 1;</span><br><span class="line">    try &#123;</span><br><span class="line">        a.hehe();</span><br><span class="line">    &#125; catch (error) &#123;</span><br><span class="line">        myEmitter.emit(&apos;error&apos;, error);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">myEmitter.emit(&apos;test&apos;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>eventNames 方法<br>emitter.eventNames()<br>返回: &lt;Array><br>获取注册的监听器名称<br>不接受参数，存在多个同名监听器事在结果中只出现一次</p>
+</li>
+<li><p>listenerCount 方法<br>emitter.listenerCount(eventName)<br>eventName &lt;string> | &lt;symbol> 正在监听的事件名。<br>返回: &lt;integer></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">myEmitter.listenerCount(&apos;test1&apos;)</span><br></pre></td></tr></table></figure>
+<p>返回实例对应监听器的数量</p>
+</li>
+<li><p>listeners 方法<br>emitter.listeners(eventName)<br>eventName &lt;string> | &lt;symbol><br>返回: &lt;Function[]></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">myEmitter.listeners(&apos;test1&apos;); // [ [Function], [Function] ]</span><br></pre></td></tr></table></figure>
+<p>返回对应监听器的回调函数<br>因为存在同名监听器，所以返回值为数组,且为一个副本</p>
+</li>
+<li><p>getMaxListeners 方法<br>emitter.getMaxListeners()<br>返回: &lt;integer></p>
+<p>返回当前实例允许的最大同名监听器的数量，默认为 10<br>超过最大数量时并不会报错，只是会给出警告</p>
+</li>
+<li><p>setMaxListeners 方法<br>emitter.setMaxListeners(n)<br>n &lt;integer><br>返回: &lt;EventEmitter><br>为指定的 EventEmitter 实例修改同名监听器的限制<br>值设为 Infinity（或 0）表示不限制监听器的数量</p>
+</li>
+<li><p>defaultMaxListeners 属性<br>改变所有 EventEmitter 实例最大监听器数量的默认值，默认为 10 个</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const Event = require(&apos;events&apos;);</span><br><span class="line">Event.defaultMaxListeners = 5;</span><br></pre></td></tr></table></figure>
+<p>注： 该属性归属于类,优先级低于实例的 setMaxListeners</p>
+</li>
+<li><p>rawListeners 方法<br>emitter.rawListeners(eventName)<br>eventName &lt;string> | &lt;symbol> 事件名称。<br>返回: &lt;Function[]><br>返回 eventName 事件的监听器数组的拷贝，包括封装的监听器（例如由 .once() 创建的）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">const emitter = new EventEmitter();</span><br><span class="line">emitter.once(&apos;log&apos;, () =&gt; console.log(&apos;只记录一次&apos;));</span><br><span class="line">// 返回一个数组，包含了一个封装了 `listener` 方法的监听器。</span><br><span class="line">const listeners = emitter.rawListeners(&apos;log&apos;);</span><br><span class="line">const logFnWrapper = listeners[0];</span><br><span class="line">// 打印 “只记录一次”，但不会解绑 `once` 事件。</span><br><span class="line">// 封装的监听器或得到的是个对象类型</span><br><span class="line">logFnWrapper.listener();</span><br><span class="line">// 打印 “只记录一次”，且移除监听器。</span><br><span class="line">logFnWrapper();</span><br><span class="line">emitter.on(&apos;log&apos;, () =&gt; console.log(&apos;持续地记录&apos;));</span><br><span class="line">// 返回一个数组，只包含 `.on()` 绑定的监听器。</span><br><span class="line">const newListeners = emitter.rawListeners(&apos;log&apos;);</span><br><span class="line">// 打印两次 “持续地记录”。</span><br><span class="line">newListeners[0]();</span><br><span class="line">emitter.emit(&apos;log&apos;);</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="遗留问题"><a href="#遗留问题" class="headerlink" title="遗留问题"></a>遗留问题</h4><ol>
+<li><p>传参数与 <code>this</code> 到监听器<br>监听器被调用时，this 将指向对应的实例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">const myEmitter = new MyEmitter();</span><br><span class="line">myEmitter.on(&apos;event&apos;, function(a, b) &#123;</span><br><span class="line">     console.log(this === myEmitter);</span><br><span class="line">     // 打印:</span><br><span class="line">     //  true</span><br><span class="line">&#125;);</span><br><span class="line">myEmitter.emit(&apos;event&apos;, &apos;a&apos;, &apos;b&apos;);</span><br></pre></td></tr></table></figure>
+<p>也可以使用 ES6 的箭头函数作为监听器,但 this 关键词不会指向 EventEmitter 实例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">const myEmitter = new MyEmitter();</span><br><span class="line">myEmitter.on(&apos;event&apos;, (a, b) =&gt; &#123;</span><br><span class="line">     console.log(this);</span><br><span class="line">     // &#123;&#125; 根据ES6的规定这里的this指向的事moudle.exports</span><br><span class="line">&#125;);</span><br><span class="line">myEmitter.emit(&apos;event&apos;, &apos;a&apos;, &apos;b&apos;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用异步<br>默认监听器的调用为同步方式，可以使用 setImmediate()或 process.nextTick()切换到异步方式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">const myEmitter = new MyEmitter();</span><br><span class="line">myEmitter.on(&apos;event&apos;, () =&gt; &#123;</span><br><span class="line">     setImmediate(() =&gt; &#123;</span><br><span class="line">         console.log(&apos;异步进行1&apos;);</span><br><span class="line">     &#125;);</span><br><span class="line">&#125;);</span><br><span class="line">myEmitter.on(&apos;event&apos;, (a, b) =&gt; &#123;</span><br><span class="line">     console.log(&apos;异步进行2&apos;);</span><br><span class="line">&#125;);</span><br><span class="line">myEmitter.emit(&apos;event&apos;);</span><br><span class="line">// 打印</span><br><span class="line">// 异步进行2</span><br><span class="line">// 异步进行1</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/node/" rel="tag"><i class="fa fa-tag"></i> node</a>
+          
+            <a href="/tags/js/" rel="tag"><i class="fa fa-tag"></i> js</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/05/node-url/" rel="next" title="过Node的API-URL篇">
+                <i class="fa fa-chevron-left"></i> 过Node的API-URL篇
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/12/translated-articles-tasks/" rel="prev" title="宏任务、微任务、队列和时间轴[译]">
+                宏任务、微任务、队列和时间轴[译] <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img style=" border-radius: 50%;" class="site-author-image" itemprop="image" src="/images/author.jpeg" alt="李涛">
+            
+              <p class="site-author-name" itemprop="name">李涛</p>
+              <p class="site-description motion-element" itemprop="description">知行合一</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/lear-cash" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/5491427443/home?wvr=5" target="_blank" title="微博">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>微博</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#events-概述"><span class="nav-number">1.</span> <span class="nav-text">events 概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#API-使用"><span class="nav-number">2.</span> <span class="nav-text">API 使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#添加事件"><span class="nav-number">2.1.</span> <span class="nav-text">添加事件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#触发事件"><span class="nav-number">2.2.</span> <span class="nav-text">触发事件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#移除事件"><span class="nav-number">2.3.</span> <span class="nav-text">移除事件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其他内置的事件、方法、属性"><span class="nav-number">2.4.</span> <span class="nav-text">其他内置的事件、方法、属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#遗留问题"><span class="nav-number">2.5.</span> <span class="nav-text">遗留问题</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">李涛</span>
+
+  
+</div>
+
+<div class="powered-by">
+  <i class="fa fa-user-md"></i>&nbsp;<span id="busuanzi_container_site_uv">本站访客数:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="post-meta-divider">|</span>
+  <span class="post-count">博客全站共3.4k字</span>
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
